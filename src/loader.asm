@@ -26,8 +26,12 @@ framebuffer_s:
 	dd 0
 	dd 0
 framebuffer_e:
+	dd 0 ;padding
+align_mod:
+	dw 6
+	dw 1
+	dd 8
 
-	dd 0, 0,0 ;padding
 end_s:
 	dd 0
 	dd end_e - end_s
