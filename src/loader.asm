@@ -21,8 +21,8 @@ framebuffer_s:
 
 	dd framebuffer_e - framebuffer_s
 
-	dd 800
-	dd 600
+	dd 1366
+	dd 768
 	dd 32
 framebuffer_e:
 	dd 0 ;padding
@@ -48,7 +48,7 @@ loader:
 	call kmain 
 	
 	mov eax, 0xdeadbeef
-	;mov [0xb8000], ax
+	;mov byte [0xb8000], 'X'
 .loop:
 	jmp .loop
 

@@ -34,10 +34,13 @@ out.iso: build/kernel.elf
 	grub-mkrescue -o out.iso iso/
 
 run: out.iso
-	qemu-system-x86_64 -drive if=pflash,format=raw,readonly=on,file=/usr/share/OVMF/OVMF_CODE.fd -cdrom out.iso
+	qemu-system-x86_64 -drive if=pflash,format=raw,readonly=on,file=/usr/share/OVMF/OVMF_CODE.fd -drive if=pflash,format=raw,readonly=on,file=/usr/share/OVMF/OVMF_VARS.fd -cdrom out.iso
 
 runbios: out.iso
-	qemu-system-x86_64 -cdrom out.iso
+	qemu-system-x86_64 -cdrom out.iso 
+
+runbochs: out.iso
+	bochs -f env/bochsrc.txt
 
 debug: out.iso
 	qemu-system-x86_64 -drive if=pflash,format=raw,readonly=on,file=/usr/share/OVMF/OVMF_CODE.fd -s -cdrom out.iso -d guest_errors,int &

@@ -33,13 +33,13 @@ void serial_puts(const char *str) {
 }
 
 void init_serial() {
-    outb(COM1 + 1, 0x00);
+    outb(COM1 + 1, 0x00); //no irqs
     outb(COM1 + 3, 0x80);
-    outb(COM1 + 0, 0x03);
+    outb(COM1 + 0, 0x03); // 38400 baud
     outb(COM1 + 1, 0x00);
-    outb(COM1 + 3, 0x03);
-    outb(COM1 + 2, 0xc7);
-    outb(COM1 + 4, 0x0b);
+    outb(COM1 + 3, 0x03); //8bits, no parity, 1 stop bit
+    outb(COM1 + 2, 0xc7); //FIFO with 14 byte threshold
+    outb(COM1 + 4, 0x0b); //IRQ enabled
 }
 
 
@@ -111,6 +111,14 @@ void print(const char* s1, ...) {
         serial_puts(cur);
         cur = *(++arg);
     }
+}
+
+int strcmp(const char *a, const char *b) {
+    while(*a && (*a == *b)) {
+        a++;
+        b++;
+    }
+    return (u8)(*a) - (u8)(*b);
 }
 
 static void itoa2 (char *buf, int base, int d)

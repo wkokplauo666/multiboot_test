@@ -17,6 +17,7 @@ void serial_putc(const char c);
 
 char *itoa(u32 input);
 char *itohex(u32 input);
+int strcmp(const char *a, const char *b);
 void print(const char *s1, ...);
 void printf(const char *s1, ...);
 

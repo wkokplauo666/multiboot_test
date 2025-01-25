@@ -3,7 +3,7 @@ import struct
 
 img = Image.open("./data/testingimage.jpg")
 img = img.convert("RGB")
-img = img.resize((800, 600))
+img = img.resize((400, 400))
 
 w, h = img.size
 
