@@ -3,7 +3,6 @@ extern kmain
 
 MAGIC equ 0xE85250D6
 ARCHITECTURE equ 0x00
-FLAGS equ 0x00
 HEAD_LENGTH equ hend - hstart
 CHECKSUM equ -(MAGIC + ARCHITECTURE + HEAD_LENGTH)
 
@@ -22,9 +21,9 @@ framebuffer_s:
 
 	dd framebuffer_e - framebuffer_s
 
-	dd 0
-	dd 0
-	dd 0
+	dd 800
+	dd 600
+	dd 32
 framebuffer_e:
 	dd 0 ;padding
 align_mod:

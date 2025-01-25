@@ -11,11 +11,13 @@ void outb(u16 port, u8 data);
 
 void init_serial();
 void serial_puts(const char *str);
+void serial_putc(const char c);
 
 #define BUFFER_SIZE 64
 
 char *itoa(u32 input);
 char *itohex(u32 input);
 void print(const char *s1, ...);
+void printf(const char *s1, ...);
 
 #endif
