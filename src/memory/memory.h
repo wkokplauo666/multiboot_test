@@ -8,5 +8,6 @@
 void *malloc(u32 size);
 void free(void *ptr);
 void reset_pool();
+void memcpy(char *s, char *d, u32 n);
 
 #endif

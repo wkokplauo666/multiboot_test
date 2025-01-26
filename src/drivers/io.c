@@ -1,4 +1,5 @@
 #include "io.h"
+#include "../drivers/video.h"
 
 int serial_empty() {
     return inb(COM1 + 5) &  LSR_EMPTY;
@@ -40,77 +41,6 @@ void init_serial() {
     outb(COM1 + 3, 0x03); //8bits, no parity, 1 stop bit
     outb(COM1 + 2, 0xc7); //FIFO with 14 byte threshold
     outb(COM1 + 4, 0x0b); //IRQ enabled
-}
-
-
-static char buffer[BUFFER_SIZE];
-
-char *itoa(u32 input) {
-    if (input == 0) {
-        buffer[0] = '0';
-        buffer[1] = '\0';
-        return buffer;
-    }
-    int i = 0;
-
-    while(input > 0 && i < BUFFER_SIZE - 1) {
-        buffer[i++] = (input % 10) + '0';
-        input /= 10;
-    }
-
-    buffer[i] = '\0';
-
-    for(int j = 0, k = i - 1; j < k; ++j, --k) {
-        char temp = buffer[j];
-        buffer[j] = buffer[k];
-        buffer[k] = temp;
-    }
-
-    return buffer;
-}
-
-
-char *itohex(u32 input) {
-    if (input == 0) {
-        buffer[0] = '0';
-        buffer[1] = 'x';
-        buffer[2] = '0';
-        buffer[3] = '\0';
-        return buffer;
-    }
-
-    const char *hex_digits = "0123456789ABCDEF";
-    int i = 0;
-
-    // Fill the buffer with hex digits (in reverse order)
-    while (input > 0 && i < (int)(BUFFER_SIZE - 3)) { // Reserve 2 for "0x" and 1 for '\0'
-        buffer[i++] = hex_digits[input % 16];
-        input /= 16;
-    }
-
-    buffer[i++] = 'x';
-    buffer[i++] = '0';
-
-    buffer[i] = '\0'; // Null-terminate the string
-
-    // Reverse the entire string (including the prefix)
-    for (int j = 0, k = i - 1; j < k; ++j, --k) {
-        char temp = buffer[j];
-        buffer[j] = buffer[k];
-        buffer[k] = temp;
-    }
-
-    return buffer;
-}
-
-void print(const char* s1, ...) {
-    const char *cur = s1;
-    const char **arg = &s1;
-
-    while(cur) {
-        serial_puts(cur);
-        cur = *(++arg);
-    }
 }
 
 int strcmp(const char *a, const char *b) {
@@ -166,8 +96,10 @@ static void itoa2 (char *buf, int base, int d)
 void putchar(int c) {
   
   serial_putc((char)c);
+  kprint_c((char)c, 0x0f);
   if(c == '\n') {
     serial_putc('\r');
+    kprint_c('\r', 0x0f);
   }
 }
 
@@ -226,6 +158,161 @@ void printf (const char *format, ...)
 
             default:
               putchar (*((int *) arg++));
+              break;
+            }
+        }
+    }
+}
+
+void putchar2(int c, u8 attr) {
+  
+  serial_putc((char)c);
+  kprint_c((char)c, attr);
+  if(c == '\n') {
+    serial_putc('\r');
+    kprint_c('\r', 0x0f);
+  }
+}
+
+void printf2(const char *format, ...)
+{
+  char **arg = (char **) &format;
+  int c;
+  char buf[20];
+  u8 attribute = 0x7;
+  int colored = 0;
+  arg++;
+  
+  while ((c = *format++) != 0)
+    {
+      if (c != '%')
+        putchar2 (c, attribute);
+      else
+        {
+          char *p, *p2;
+          int pad0 = 0, pad = 0;
+          
+          c = *format++;
+          if(c == 'a') { 
+
+            if(!colored) {
+            switch(*format) {
+              case '0': 
+                colored = 1;
+                attribute = 0;
+                break;
+              case '1': 
+                colored = 1;
+                attribute = 1;
+                break;
+                case '2': 
+                colored = 1;
+                attribute = 2;
+                break;
+              case '3': 
+                colored = 1;
+                attribute = 3;
+                break;
+                case '4': 
+                colored = 1;
+                attribute = 4;
+                break;
+              case '5': 
+                colored = 1;
+                attribute = 5;
+                break;
+              case '6': 
+                colored = 1;
+                attribute = 6;
+                break;
+              case '7': 
+                colored = 1;
+                attribute = 7;
+                break;
+              case '8': 
+                colored = 1;
+                attribute = 8;
+                break;
+              case '9': 
+                colored = 1;
+                attribute = 9;
+                break;
+              case 'a': 
+                colored = 1;
+                attribute = 10;
+                break;
+              case 'b': 
+                colored = 1;
+                attribute = 11;
+                break;
+              case 'c': 
+                colored = 1;
+                attribute = 12;
+                break;
+              case 'd': 
+                colored = 1;
+                attribute = 13;
+                break;
+              case 'e': 
+                colored = 1;
+                attribute = 14;
+                break;
+              case 'f': 
+                colored = 1;
+                attribute = 15;
+                break;
+
+              default: 
+                colored = 0;
+                attribute = 0x7;
+                break;
+            }
+          }
+
+            if(*(format) == 's') {
+              colored = 0;
+              attribute = 0x7;
+            }
+            format++;
+            continue;
+          }
+          if (c == '0')
+            {
+              pad0 = 1;
+              c = *format++;
+            }
+
+          if (c >= '0' && c <= '9')
+            {
+              pad = c - '0';
+              c = *format++;
+            }
+
+          switch (c)
+            {
+            case 'd':
+            case 'u':
+            case 'x':
+              itoa2 (buf, c, *((int *) arg++));
+              p = buf;
+              goto string;
+              break;
+
+            case 's':
+              p = *arg++;
+              if (! p)
+                p = "(null)";
+
+            string:
+              for (p2 = p; *p2; p2++);
+              for (; p2 < p + pad; p2++)
+                putchar2 (pad0 ? '0' : ' ', attribute);
+              while (*p)
+                putchar2 (*p++, attribute);
+              break;
+
+            default:
+              putchar2 (*((int *) arg++), attribute);
               break;
             }
         }

@@ -50,3 +50,10 @@ void free(void *ptr) {
 void reset_pool() {
     offset = 0; // Reset the entire pool for reuse.
 }
+
+void memcpy(char *source, char *dest, u32 nbytes) {
+    u32 i;
+    for (i = 0; i < nbytes; i++) {
+        *(dest + i) = *(source + i);
+    }
+}

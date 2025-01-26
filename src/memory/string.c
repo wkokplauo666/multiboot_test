@@ -35,3 +35,32 @@ char **split(char *input) {
     }
     return res;
 }
+
+int strlen(char s[]) {
+    int i = 0;
+    while (s[i] != '\0') ++i;
+    return i;
+}
+
+void append(char s[], char n) {
+    int len = strlen(s);
+    s[len] = n;
+    s[len+1] = '\0';
+}
+
+void backspace(char s[]) {
+    int len = strlen(s);
+    s[len-1] = '\0';
+}
+
+void firstWord(char *sentence, char *res) {
+    while(*sentence == ' ') sentence++;
+
+    while(*sentence && !(*sentence == ' ')) {
+        *res = *sentence;
+        res++;
+        sentence++;
+    }
+
+    *res = '\0';
+}
