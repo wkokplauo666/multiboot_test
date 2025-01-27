@@ -1,11 +1,12 @@
 #include "boot/multiboot.h"
 #include "drivers/io.h"
 #include "init.h"
-#include "memory/string.h"
+#include "memory/memory.h"
 #include "drivers/video.h"
 #include "interrupt/interrupt.h"
 #include "interrupt/irq_driver.h"
 #include "drivers/keyboard.h"
+#include "memory/string.h"
 
 extern void kmain();
 
@@ -115,7 +116,7 @@ void kmain() {
   (void)fpitch;
   if(isVideo) return;
 
-  printf2("Installing %aaInterrupts...%as\n");
+  printf2("\nInstalling %aaInterrupts...%as\n");
   isr_install();
 
   asm volatile("sti");
@@ -123,8 +124,10 @@ void kmain() {
 
 	printf2("%a8Welcome to RandomOS. Contributors: %as\n");
   printf2("%a8  1.%as %acNarada Fox%as\n");
-  printf2("%a8  2.%as %acHawariu Warsono%as\n");
-	printf("Shell: ");
+  //printf2("%a8  2.%as %acHawaryu Warsono%as\n");
+
+	printf("\n");
+  shell();
   
   return;
 }

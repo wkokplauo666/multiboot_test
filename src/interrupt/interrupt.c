@@ -148,3 +148,32 @@ void irq_handler(registers_t r) {
         handler(r);
     }
 }
+
+void irq_set_mask(u8 irqline) {
+    u16 port;
+    u8 value;
+
+    if(irqline < 8) {
+        port = 0x21;
+    } else {
+        port = 0xa1;
+        irqline -= 8;
+    }
+
+    value = inb(port) | (1 << irqline);
+    outb(port, value);
+}
+
+void irq_clear_mask(u8 irqline) {
+    u16 port;
+    u8 value;
+
+    if(irqline < 8) {
+        port = 0x21;
+    } else {
+        port = 0xa1;
+        irqline -= 8;
+    }
+    value = inb(port) & ~(1 << irqline);
+    outb(port, value);
+}

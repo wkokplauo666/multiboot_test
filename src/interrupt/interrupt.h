@@ -104,4 +104,7 @@ void isr_handler();
 typedef void (*isr_t)(registers_t);
 void register_interrupt_handler(u8 n, isr_t handler);
 
+void irq_set_mask(u8 irqline);
+void irq_clear_mask(u8 irqline);
+
 #endif

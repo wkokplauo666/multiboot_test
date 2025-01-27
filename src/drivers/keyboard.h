@@ -63,7 +63,55 @@ typedef struct {
 #define KEY_LSHIFT 0x2a
 #define KEY_BACKSLASH 0x2b
 #define KEY_Z 0x2c
-#define KEY_RSIFT 0x36
+#define KEY_X		0x2D
+#define KEY_C		0x2E
+#define KEY_V		0x2F
+#define KEY_B		0x30
+#define KEY_N		0x31
+#define KEY_M		0x32
+//#define KEY_<		0x33
+//#define KEY_>		0x34
+#define KEY_SLASH	0x35	/* / ? */
+#define KEY_RSHIFT	0x36
+#define KEY_37
+#define KEY_ALT		0x38
+#define KEY_SPACE	0x39
+#define KEY_CAPSLOCK	0x3a
+#define KEY_F1		0x3b
+#define KEY_F2		0x3c
+#define KEY_F3		0x3d
+#define KEY_F4		0x3e
+#define KEY_F5		0x3f
+#define KEY_F6		0x40
+#define KEY_F7		0x41
+#define KEY_F8		0x42
+#define KEY_F9		0x43
+#define KEY_F10		0x44
+#define KEY_PAUSE	0x45
+#define KEY_SCRLK	0x46
+#define KEY_HOME	0x47
+#define KEY_UP		0x48
+#define KEY_PGUP	0x49
+#define KEY_4A
+#define KEY_LEFT	0x4b
+#define KEY_4C
+#define KEY_RIGHT	0x4d
+#define KEY_4E
+#define KEY_END		0x4f
+#define KEY_DOWN	0x50
+#define KEY_PGDN	0x51
+#define KEY_INSERT	0x52
+#define KEY_DELETE	0x53
+#define KEY_54
+#define KEY_55
+#define KEY_56
+#define KEY_F11		0x57
+#define KEY_F12		0x58
+#define KEY_59
+#define KEY_5A
+#define KEY_START	0x5b
+#define KEY_5C
+#define KEY_BOOK	0x5d
 
 void init_keyboard();
 

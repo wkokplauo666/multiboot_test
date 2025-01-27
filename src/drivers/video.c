@@ -138,7 +138,7 @@ void kprint_backspace() {
     int row = get_offset_row(offset);
     int col = get_offset_col(offset);
 
-    if(col < 2) return;
+    if(col < 7) return;
 
     print_char(0x00, col, row, WHITE_ON_BLACK);
     set_cursor_offset(offset);

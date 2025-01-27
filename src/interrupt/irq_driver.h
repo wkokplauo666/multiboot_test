@@ -3,6 +3,8 @@
 
 #include "../common.h"
 
-void init_timer(u32 freq);
+void init_timer();
+void start_timer(u32 freq);
+void stop_timer();
 
 #endif

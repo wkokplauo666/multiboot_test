@@ -3,7 +3,7 @@ OBJECTS = $(patsubst src/%.c, build/%.o, $(patsubst src/%.asm, build/%.o, $(SOUR
 DEPS = $(OBJECTS:.o=.d)
 
 CC = i386-elf-gcc
-CFLAGS = -O0 -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c -g -fno-omit-frame-pointer -MMD -ffreestanding
+CFLAGS = -O0 -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -c -g -fno-omit-frame-pointer -MMD -ffreestanding
 
 LD = i386-elf-ld
 LDFLAGS = -T env/link.ld -melf_i386

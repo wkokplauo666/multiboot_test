@@ -2,6 +2,7 @@
 #define MEMORY_H
 
 #define POOL_SIZE 1024 // 1KB
+#define NULL (void *) 0
 
 #include "../common.h"
 

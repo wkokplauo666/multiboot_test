@@ -1,4 +1,4 @@
-#include "memory.h"
+#include "memory.h" // Not the standard memory.h header.
 
 // Metadata structure for tracking allocations.
 typedef struct {
@@ -6,7 +6,7 @@ typedef struct {
     int is_free;  // Whether this block is free.
 } BlockHeader;
 
-static u8 memory_pool[POOL_SIZE]; // The static memory pool.
+static u8 memory_pool[POOL_SIZE] __attribute__((aligned(4))); // The static memory pool.
 static u32 offset = 0;            // Current offset into the memory pool.
 
 void *malloc(u32 size) {
@@ -25,7 +25,7 @@ void *malloc(u32 size) {
 
     // No free block, allocate at the end of the pool.
     if (offset + sizeof(BlockHeader) + size > POOL_SIZE) {
-        return 0; // Not enough memory.
+        return NULL; // Not enough memory.
     }
 
     BlockHeader *header = (BlockHeader *)&memory_pool[offset];

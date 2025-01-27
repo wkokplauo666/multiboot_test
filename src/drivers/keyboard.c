@@ -1,6 +1,8 @@
 #include "keyboard.h"
 #include "video.h"
 #include "../memory/string.h"
+#include "../memory/memory.h"
+#include "../shell/commands.h"
 
 #define P KEY_PREFIX
 #define N KEY_NONE
@@ -14,7 +16,8 @@ u8 scancode_type[] = {
     A, A, A, A, A, A, S, P, A, A, A,
     A, A, A, A, A, A, A, A, A, P, A,
     A, A, A, A, A, A, A, A, A, A, P,
-    N, P, A, P, S, S, S, S, S, S, S
+    N, P, A, P, S, S, S, S, S, S, S,
+    S, S, S, S, S, S, S, S, S, S, S
 };
 
 u8 scancode_ascii[] = {
@@ -23,7 +26,8 @@ u8 scancode_ascii[] = {
     'u', 'i', 'o', 'p', '[', ']', UNA, UNA, 'a', 's', 'd',
     'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', UNA, '\\',
     'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', UNA,
-    UNA, UNA, ' ', UNA, UNA, UNA, UNA, UNA, UNA, UNA, UNA
+    UNA, UNA, ' ', UNA, UNA, UNA, UNA, UNA, UNA, UNA, UNA, //f7
+    UNA, UNA, UNA, UNA, UNA, UNA, UNA, UNA, UNA, UNA, UNA
 };
 
 u8 scancode_ascii_shift[] = {
@@ -61,7 +65,8 @@ static void keyboard_callback(registers_t regs) {
 
     type = scancode_type[scan_code];
     if(pressed && type == KEY_NONE) {
-        printf("No scan code: 0x%x\n", scan_code);
+        printf("\nScan code not supported: 0x%x\n", scan_code);
+        shell();
     }
 
     if(type == KEY_PREFIX) {
@@ -69,10 +74,21 @@ static void keyboard_callback(registers_t regs) {
             case KEY_ESC:
                 keys.esc = pressed;
                 break;
+            case KEY_CAPSLOCK: 
+                if (pressed) {
+                    keys.capslock = !keys.capslock;
+                } 
+                break;
             case KEY_CTRL: 
                 keys.ctrl = pressed;
                 break;
-            case KEY_RSIFT:
+            case KEY_ALT: 
+                keys.alt = pressed;
+                break;
+            case KEY_START: 
+                keys.start = pressed;
+                break;
+            case KEY_RSHIFT:
             case KEY_LSHIFT: 
                 keys.shift = pressed;
                 break;
@@ -87,7 +103,8 @@ static void keyboard_callback(registers_t regs) {
                 //printf2("\nwhat did you say: %s", buffer);
                 process_command(buffer);
                 buffer[0] = '\0';
-                printf("\nShell: ");
+                printf("\n");
+                shell();
                 break;
             case KEY_BACK: 
                 kprint_backspace();
@@ -120,19 +137,36 @@ void init_keyboard() {
    register_interrupt_handler(IRQ1, keyboard_callback); 
 }
 
-static char *supported_commands[] = {"help", "info", "halt"};
+static char *supported_commands[] = {"help", "info", "halt", "print", "timer", "clear", 
+"ebda"};
+static void (*commands_func[])(int, char**) = {NULL, info_command, halt_command, print_command,
+timer_command, clear_command, ebda_command};
 
 void process_command(char *command1) {
     int supp_len = sizeof(supported_commands)/ sizeof(supported_commands[0]);
     char command[128];
+    char *args[10];
     firstWord(command1, command);
     int valid = 0;
     for(int i = 0; i < supp_len; i++) {
         if(strcmp(command, supported_commands[i]) == 0) {
-            printf2("\nExecuted command: %a9%s%as\n", supported_commands[i]);
-            if(strcmp(command, "info")) {
-                printf("So indeed we made this thing that can run on any x86 (BIOS-Supported) machines.\nThis is exactly the day where i am going to 'release' this thing's source code and show everyone how oh-god-so-good i am!!\n like i spent a whole week on this thing\n");
+            split(command1, args);
+
+            printf2("\nExecuted command: %a9%s%as\n", command1);
+            printf2("Args: \n");
+            int argc;
+            for(argc = 0; args[argc] != NULL; argc++) {
+                printf2("    %d. %s\n", argc, args[argc]);
             }
+
+            if(strcmp(command, "help") == 0) {
+                printf("Supported commands: ");
+                for(int j = 0; j < supp_len; j++) printf(" %s", supported_commands[j]);
+                valid = 1;
+                continue;
+            }
+
+            if(commands_func[i] != NULL) commands_func[i](argc, args);
             valid = 1;
         }
     }
