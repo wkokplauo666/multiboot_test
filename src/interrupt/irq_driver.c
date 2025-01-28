@@ -11,8 +11,8 @@ u32 tick = 0;
 static void timer_callback(registers_t regs) {
     (void)regs;
     tick++;
-    printf("Tick: %d\n", tick);
-    if(tick == 100) stop_timer();
+    //printf("Tick: %d\n", tick);
+    //if(tick == 100) stop_timer();
 }
 
 void start_timer(u32 freq) {
@@ -39,5 +39,9 @@ void init_timer() {
     /* Install the function we just wrote */
     register_interrupt_handler(IRQ0, timer_callback);
     irq_clear_mask(0);
+}
+
+u32 get_tick() {
+    return tick;
 }
 

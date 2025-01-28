@@ -128,26 +128,45 @@ void skip(char **in) {
 
 int atoi(const char *str) { 
     int res = 0;
-    int sign  = 1;
+    int isHex = 0;
 
     if(str == NULL) return 0;
     while(*str == ' ') {
         str++;
     }
 
-    if(*str == '-') {
-        sign = -1;
-        str++;
-    } else if(*str == '+') {
+    if(*str == '0' && *(++str) == 'x') {
+        isHex = 1;
         str++;
     }
 
-    while(*str >= '0' && *str <= '9') {
-        res = res * 10 + (*str - '0');
-        str++;
+    if(!isHex) {
+        while(*str >= '0' && *str <= '9') {
+            res = res * 10 + (*str - '0');
+            str++;
+        }
+    } else {
+        while(*str) {
+            char c = *str;
+            int val;
+
+            if(c >= '0' && c <= '9') {
+                val = c - '0';
+            } else if(c >= 'a' && c <= 'f') {
+                val = c - 'a' + 10;
+            } else if (c >= 'A' && c <= 'F') {
+                val = c - 'A' + 10;
+            } else {
+                printf("Error: invalid character '%s' \n", (char []){c, 0});
+                return -1;
+            }
+
+            res = res * 16 + val;
+            str++;
+        }
     }
 
-    return res * sign;
+    return res;
 }
 
 void shell() {

@@ -138,9 +138,10 @@ void init_keyboard() {
 }
 
 static char *supported_commands[] = {"help", "info", "halt", "print", "timer", "clear", 
-"ebda"};
+"ebda", "malloc", "free_blocks", "dump", "write", "memset", "debug", "outb"};
 static void (*commands_func[])(int, char**) = {NULL, info_command, halt_command, print_command,
-timer_command, clear_command, ebda_command};
+timer_command, clear_command, ebda_command, malloc_command, free_blocks_command, dump_command,
+write_command, memset_command, debug_command, outb_command};
 
 void process_command(char *command1) {
     int supp_len = sizeof(supported_commands)/ sizeof(supported_commands[0]);
@@ -152,11 +153,12 @@ void process_command(char *command1) {
         if(strcmp(command, supported_commands[i]) == 0) {
             split(command1, args);
 
-            printf2("\nExecuted command: %a9%s%as\n", command1);
-            printf2("Args: \n");
+            //printf2("\nExecuted command: %a9%s%as\n", command1);
+            //printf2("Args: \n");
+            printf("\n");
             int argc;
             for(argc = 0; args[argc] != NULL; argc++) {
-                printf2("    %d. %s\n", argc, args[argc]);
+                //printf2("    %d. %s\n", argc, args[argc]);
             }
 
             if(strcmp(command, "help") == 0) {
@@ -167,6 +169,9 @@ void process_command(char *command1) {
             }
 
             if(commands_func[i] != NULL) commands_func[i](argc, args);
+            for(int j = 0; j < arglen(args); j++) {
+                free(args[j]);
+            }
             valid = 1;
         }
     }

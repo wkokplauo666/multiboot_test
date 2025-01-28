@@ -126,8 +126,14 @@ void kmain() {
   printf2("%a8  1.%as %acNarada Fox%as\n");
   //printf2("%a8  2.%as %acHawaryu Warsono%as\n");
 
+  //printf("%08x\n", 0xff);
+  init_timer();
+  start_timer(4); //100 ticks = 1 second
+
+  init_fpu();
+
 	printf("\n");
   shell();
-  
+
   return;
 }

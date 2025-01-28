@@ -10,6 +10,9 @@ void serial_putc(const char c) {
     outb(COM1, c);
 }
 
+void init_fpu() {
+	asm volatile("finit" ::: "memory");
+}
 
 u8 inb(u16 port) {
 	u8 res;
@@ -276,6 +279,9 @@ void printf2(const char *format, ...)
             format++;
             continue;
           }
+
+
+
           if (c == '0')
             {
               pad0 = 1;
@@ -297,7 +303,6 @@ void printf2(const char *format, ...)
               p = buf;
               goto string;
               break;
-
             case 's':
               p = *arg++;
               if (! p)
@@ -317,4 +322,18 @@ void printf2(const char *format, ...)
             }
         }
     }
+}
+
+void print_float(float input) {
+  int ipart = (int)input;
+  float fpart = input - ipart;
+  printf("%d", ipart);
+  printf(".");
+  fpart *= 1000000;
+  int fint = (int)(fpart + 0.5);
+  printf("%d", fint);
+}
+
+float get_time() {
+  return (float)(get_tick() * 3) / 100.0;
 }
